@@ -1,6 +1,10 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from apirest.serializers import UserSerializer, GroupSerializer
+from apirest.serializers import UserSerializer, GroupSerializer, HouseSerializer, NodeSerializer, DataSerializer
+from apirest.models import House, Node, ConsumptionData
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -17,3 +21,27 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+
+class HouseViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = House.objects.all()
+    serializer_class = HouseSerializer
+
+
+class NodeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Node.objects.all()
+    serializer_class = NodeSerializer
+
+
+class DataViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = ConsumptionData.objects.all()
+    serializer_class = DataSerializer
