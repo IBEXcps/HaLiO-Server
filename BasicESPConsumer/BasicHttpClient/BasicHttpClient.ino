@@ -6,8 +6,11 @@
 
 ESP8266WiFiMulti WiFiMulti;
 
-String host = "192.168.0.4";
-int port = 8000;
+String host = "ibexcps.com";
+int port = 8001;
+
+char user[] = "admin";
+char password[] = "paodebatata";
 
 void setup()
 {
@@ -26,9 +29,9 @@ void upload_data(float value, String node)
     root.printTo(payload, sizeof(payload));
 
     HTTPClient http;
-    http.setAuthorization("will","paodebatata");
+    http.setAuthorization(user, password);
 
-    http.begin(host,8000, "/data/"); //HTTP
+    http.begin(host,port, "/data/"); //HTTP
     http.addHeader("Content-Type", "application/json");
     int httpCode = http.POST(payload);
 
@@ -58,7 +61,7 @@ void read_relay(String nodeid)
 {
 
     HTTPClient http;
-    http.setAuthorization("will","paodebatata");
+    http.setAuthorization(user, password);
 
     http.begin(host,port, "/nodes/"+nodeid+"/"); //HTTP
     int httpCode = http.GET();
@@ -68,7 +71,7 @@ void read_relay(String nodeid)
         if(httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_CREATED)
         {
             String payload = http.getString();
-            StaticJsonBuffer<300> jsonBuffer;
+            StaticJsonBuffer<400> jsonBuffer;
             JsonObject& root = jsonBuffer.parseObject(payload);
 
             if (!root.success()) {
