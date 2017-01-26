@@ -25,7 +25,7 @@ SECRET_KEY = 'v@n+ifm+zba^8-4&nc)=olb+oi%$p)dp$v$zz!8mvwk*0aa4)='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["ibexcps.com", "localhost"]
 
 
 # Application definition
