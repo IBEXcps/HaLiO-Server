@@ -15,5 +15,6 @@ router.register(r'data', views.DataViewSet)
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^dash$', views.index, name='index'),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^lastdata/(?P<node_id>\d+)/$', views.last_reading, name='last data'),
 ]

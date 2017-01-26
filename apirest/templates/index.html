@@ -1304,7 +1304,7 @@
 
       var echartGauge = echarts.init(document.getElementById('echart_guage'), theme);
 
-      echartGauge.setOption({
+      var option = {
         tooltip: {
           formatter: "{a} <br/>{b} : {c}%"
         },
@@ -1327,8 +1327,8 @@
           center: ['50%', '70%'],
           startAngle: 180,
           endAngle: 0,
-          min: 0,
-          max: 100,
+          min: -50,
+          max: 50,
           precision: 0,
           splitNumber: 10,
           axisLine: {
@@ -1412,7 +1412,19 @@
             name: 'Instant Power Consumption'
           }]
         }]
-      });
+      };
+      echartGauge.setOption(option);
+
+
+      var posting = function(){ var postt = $.get( "/lastdata/1/" );
+      // Put the results in a div
+      postt.done(function( data ) {
+            var content = parseFloat(data);
+            option.series[0].data[0].value = content;
+            echartGauge.setOption(option,true);
+      });};
+      var t=setInterval(posting,1000);
+
 
       var echartLine = echarts.init(document.getElementById('echart_line'), theme);
 
