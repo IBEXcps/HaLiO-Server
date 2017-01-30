@@ -63,3 +63,12 @@ def last_reading(request, node_id):
     node = get_object_or_404(Node,id=node_id)
     last_value = node.get_last_reading()
     return HttpResponse(str(last_value))
+
+
+def toggle_node(request, node_id, state):
+    node = get_object_or_404(Node, id=int(node_id))
+    state = True if state == "true" else False
+    node.relayState = state
+    node.save()
+    return HttpResponse("ok!")
+

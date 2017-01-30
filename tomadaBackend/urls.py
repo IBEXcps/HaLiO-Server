@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^dash$', views.index, name='index'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^lastdata/(?P<node_id>\d+)/$', views.last_reading, name='last data'),
+    url(r'^switchnode/(?P<node_id>\d+)/(?P<state>(true|false))/$', views.toggle_node, name='last data'),
 ]
