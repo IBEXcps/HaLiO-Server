@@ -6,6 +6,7 @@ from django.shortcuts import render, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.decorators import login_required
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -48,6 +49,7 @@ class DataViewSet(viewsets.ModelViewSet):
     serializer_class = DataSerializer
 
 
+@login_required(login_url="api-auth/login/?next=/")
 def index(request):
     points = ConsumptionData.objects.all().order_by('-timestamp')[:500][::-1]
     houses = House.objects.filter(user=request.user)
