@@ -49,12 +49,17 @@ class DataViewSet(viewsets.ModelViewSet):
 
 
 def index(request):
-    points = ConsumptionData.objects.all().order_by('-id')[:50][::-1]
+    points = ConsumptionData.objects.all().order_by('-timestamp')[:500][::-1]
+    houses = House.objects.filter(user=request.user)
+    nodes = Node.objects.filter(house__user=request.user)
+
     return render(request, 'index.html', {'node': 1,
-                                          'points': points})
+                                          'points': points,
+                                          'houses': houses,
+                                          'nodes': nodes})
 
 
 def last_reading(request, node_id):
     node = get_object_or_404(Node,id=node_id)
-    last_value = ConsumptionData.objects.filter(node=node).order_by('-timestamp')[0].value
+    last_value = node.get_last_reading()
     return HttpResponse(str(last_value))

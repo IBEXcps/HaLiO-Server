@@ -276,34 +276,25 @@
                             </div>
                             <div class="x_content" style="height:300px;"    >
 
+                                    {% for house in houses %}
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ house }}</label>
+                                        <form class="form-horizontal form-label-left">
+                                            <div class="form-group">
 
-                                    <form class="form-horizontal form-label-left">
-                                        <div class="form-group">
+                                                <div class="col-md-9 col-sm-9 col-xs-12">
 
-                                            <div class="col-md-9 col-sm-9 col-xs-12">
-                                              <div class="">
-                                                <label>
-                                                  <input type="checkbox" class="js-switch" checked /> Checked
-                                                </label> <label class="pull-right">39.5W</label>
+                                                      {% for node in house.nodes.all %}
+                                                        <div class="">
+                                                        <label>
+                                                          <input type="checkbox" class="js-switch" checked /> {{node.nome}}
+                                                        </label> <label class="pull-right">{{ node.get_last_reading }}</label>
+                                                      </div>
+                                                    {% endfor %}
+
+                                                </div>
                                               </div>
-                                              <div class="">
-                                                <label>
-                                                  <input type="checkbox" class="js-switch" /> Unchecked
-                                                </label><label class="pull-right">39.5W</label>
-                                              </div>
-                                              <div class="">
-                                                <label>
-                                                  <input type="checkbox" class="js-switch" disabled="disabled" /> Disabled
-                                                </label><label class="pull-right">39.5W</label>
-                                              </div>
-                                              <div class="">
-                                                <label>
-                                                  <input type="checkbox" class="js-switch" disabled="disabled" checked="checked" /> Disabled Checked
-                                                </label><label class="pull-right">39.5W</label>
-                                              </div>
-                                            </div>
-                                          </div>
-                                    </form>
+                                        </form>
+                                    {% endfor %}
 
 
                             </div>
