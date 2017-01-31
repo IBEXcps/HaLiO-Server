@@ -924,7 +924,7 @@
                 lineOptions["series"][{{forloop.counter0}}].data=datas[{{forloop.counter0}}];
             {% endfor %}{% endfor %}
             echartGauge.setOption(option, true);
-            echartLine.setOption(lineOptions, true);
+            echartLine.setOption({'series': lineOptions['series']}, false);
       });};
 
       var t=setInterval(posting,1000);
