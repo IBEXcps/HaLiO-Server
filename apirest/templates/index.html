@@ -274,14 +274,14 @@
                                 </ul>
                                 <div class="clearfix"></div>
                             </div>
-                            <div class="x_content" style="height:300px;"    >
+                            <div class="x_content" style="height:300px;">
 
-                                    {% for house in houses %}
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ house }}</label>
-                                        <form class="form-horizontal form-label-left">
-                                            <div class="form-group">
+                                {% for house in houses %}
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ house.nome }}</label>
+                                <form class="form-horizontal form-label-left">
+                                    <div class="form-group">
 
-                                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                        <div class="col-md-9 col-sm-9 col-xs-12">
 
                                             {% for node in house.nodes.all %}
                                             <div class="">
@@ -827,30 +827,24 @@
       echartGauge.setOption(option);
 
 
-      var posting = function(){ var postt = $.get( "/lastdata/1/" );
-      // Put the results in a div
-      postt.done(function( data ) {
-            var content = parseFloat(data);
-            option.series[0].data[0].value = content;
-            echartGauge.setOption(option,true);
-      });};
-      var t=setInterval(posting,1000);
 
 
       var echartLine = echarts.init(document.getElementById('echart_line'), theme);
 
-      echartLine.setOption({
+     var datas =[{% for house in houses %} {% for node in house.nodes.all %}[[0,0],[100,10]],{% endfor %}{% endfor %}];
+
+      var lineOptions = {
         title: {
           text: 'Power Consumption by Device',
           subtext: ''
         },
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
         },
         legend: {
           x: 220,
           y: 40,
-          data: ['Minecraft Server', 'AC', 'Cat Gadgets']
+          data: [{% for house in houses %} {% for node in house.nodes.all %}"{{node.nome}}",{% endfor %}{% endfor %}]
         },
         toolbox: {
           show: true,
@@ -881,54 +875,59 @@
         },
         calculable: true,
         xAxis: [{
-          type: 'category',
-          boundaryGap: false,
-          //data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-          data: [ {% for point in points %} "{{point.timestamp}}" , {% endfor %}]
+          type: 'value',
+          axisLabel : 
+          {
+            formatter: function(v)
+            {
+                return "" + (v/60).toFixed(0) + "min" ;
+            }
+          }
         }],
         yAxis: [{
           type: 'value'
         }],
-        series: [{
-          name: 'Minecraft Server',
-          type: 'line',
-          smooth: true,
-          itemStyle: {
-            normal: {
-              areaStyle: {
-                type: 'default'
-              }
-            }
-          },
-          data: [ {% for point in points %} {{point.value}} , {% endfor %}]
-        }, {
-          name: 'Cat Gadgets',
-          type: 'line',
-          smooth: true,
-          itemStyle: {
-            normal: {
-              areaStyle: {
-                type: 'default'
-              }
-            }
-          },
-          data: [0]
-        }, {
-          name: 'AC',
-          type: 'line',
-          smooth: true,
-          itemStyle: {
-            normal: {
-              areaStyle: {
-                type: 'default'
-              }
-            }
-          },
-          data: [0]
-        }]
-      });
+        series:
+        [
+        {% for house in houses %} {% for node in house.nodes.all %}
+            {
+              name: '{{ node.nome }}',
+              type: 'line',
+              smooth: true,
+              itemStyle:
+              {
+                normal:
+                {
+                  areaStyle:
+                  {
+                    type: 'default'
+                  }
+                }
+              },
+              data: datas[{{forloop.counter0}}],
+            },
+        {% endfor %}{% endfor %}
+        ]
+      };
 
+      echartLine.setOption(lineOptions);
+      console.log(lineOptions)
 
+      var posting = function(){ var postt = $.get( "/lastdata/" );
+      // Put the results in a div
+      postt.done(function( data ) {
+            data = JSON.parse(data);
+            datas = data[1];
+            //console.log(data);
+            option.series[0].data[0].value = data[0];
+            {% for house in houses %} {% for node in house.nodes.all %}
+                lineOptions["series"][{{forloop.counter0}}].data=datas[{{forloop.counter0}}];
+            {% endfor %}{% endfor %}
+            echartGauge.setOption(option, true);
+            echartLine.setOption(lineOptions, true);
+      });};
+
+      var t=setInterval(posting,1000);
 
 </script>
 

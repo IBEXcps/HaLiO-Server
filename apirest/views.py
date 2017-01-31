@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.decorators import login_required
+import datetime
+import json
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -51,20 +53,27 @@ class DataViewSet(viewsets.ModelViewSet):
 
 @login_required(login_url="api-auth/login/?next=/")
 def index(request):
-    points = ConsumptionData.objects.all().order_by('-timestamp')[:500][::-1]
     houses = House.objects.filter(user=request.user)
+
     nodes = Node.objects.filter(house__user=request.user)
 
+    x_axis = [i for i in range(600)]
+
+    now = datetime.datetime.now()
+
     return render(request, 'index.html', {'node': 1,
-                                          'points': points,
                                           'houses': houses,
-                                          'nodes': nodes})
+                                          'x_axis':x_axis})
 
 
-def last_reading(request, node_id):
-    node = get_object_or_404(Node,id=node_id)
-    last_value = node.get_last_reading()
-    return HttpResponse(str(last_value))
+def last_reading(request):
+    nodes = Node.objects.filter(house__user=request.user)
+    total_usage = 0
+    for node in nodes:
+        total_usage += node.get_last_reading()
+    data = [total_usage, [ node.getFormattedLastData() for node in nodes]]
+
+    return HttpResponse(json.dumps(data))
 
 
 def toggle_node(request, node_id, state):

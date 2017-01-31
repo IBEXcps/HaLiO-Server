@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import datetime
 
 # Create your models here.
 
@@ -22,6 +23,22 @@ class Node(models.Model):
     def get_last_reading(self):
         return ConsumptionData.objects.filter(node=self).order_by('-timestamp')[0].value
 
+    def lastPoints(self):
+        return ConsumptionData.objects.filter(node=self).order_by('-timestamp')[:500][::-1]
+
+    def getDataSince(self, startTime, interval=None): #start forcing interval soon
+        data = ConsumptionData.objects.filter(node=self, timestamp__gt=startTime)
+        return data
+
+    def getFormattedLastData(self):
+        timeback = 60
+        data = self.getDataSince(datetime.datetime.now() - datetime.timedelta(minutes=timeback))
+        ret = []
+        now = datetime.datetime.now()
+        for point in data:
+            since = (now - point.timestamp).seconds
+            ret.append([-since, point.value])
+        return ret
 
 class ConsumptionData(models.Model):
     node = models.ForeignKey(Node)
