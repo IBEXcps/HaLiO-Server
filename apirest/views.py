@@ -51,7 +51,7 @@ class DataViewSet(viewsets.ModelViewSet):
     serializer_class = DataSerializer
 
 
-@login_required(login_url="api-auth/login/?next=/")
+@login_required(login_url="/admin/login/?next=/")
 def index(request):
     houses = House.objects.filter(user=request.user)
 
