@@ -4,8 +4,6 @@ from apirest.serializers import UserSerializer, GroupSerializer, HouseSerializer
 from apirest.models import House, Node, ConsumptionData
 from django.shortcuts import render, HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from rest_framework import status
 from django.contrib.auth.decorators import login_required
 import datetime
 import json
@@ -54,16 +52,7 @@ class DataViewSet(viewsets.ModelViewSet):
 @login_required(login_url="/admin/login/?next=/")
 def index(request):
     houses = House.objects.filter(user=request.user)
-
-    nodes = Node.objects.filter(house__user=request.user)
-
-    x_axis = [i for i in range(600)]
-
-    now = datetime.datetime.now()
-
-    return render(request, 'index.html', {'node': 1,
-                                          'houses': houses,
-                                          'x_axis':x_axis})
+    return render(request, 'index.html', {'houses': houses})
 
 
 def last_reading(request):
