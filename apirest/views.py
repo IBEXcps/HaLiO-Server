@@ -64,7 +64,7 @@ def last_reading(request):
 
     return HttpResponse(json.dumps(data))
 
-
+@login_required
 def toggle_node(request, node_id, state):
     node = get_object_or_404(Node, id=int(node_id))
     state = True if state == "true" else False
