@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User, Group
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import viewsets
 from apirest.serializers import UserSerializer, GroupSerializer, HouseSerializer, NodeSerializer, DataSerializer
 from apirest.models import House, Node, ConsumptionData
