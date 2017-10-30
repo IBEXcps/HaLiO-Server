@@ -9,6 +9,7 @@ import datetime
 import json
 
 
+@permission_classes((IsAuthenticated, ))
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -16,7 +17,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
-
+@permission_classes((IsAuthenticated, ))
 class GroupViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
@@ -24,7 +25,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
-
+@permission_classes((IsAuthenticated, ))
 class HouseViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
@@ -32,7 +33,7 @@ class HouseViewSet(viewsets.ModelViewSet):
     queryset = House.objects.all()
     serializer_class = HouseSerializer
 
-
+@permission_classes((IsAuthenticated, ))
 class NodeViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
@@ -40,7 +41,7 @@ class NodeViewSet(viewsets.ModelViewSet):
     queryset = Node.objects.all()
     serializer_class = NodeSerializer
 
-
+@permission_classes((IsAuthenticated, ))
 class DataViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
