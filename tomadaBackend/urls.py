@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^dash$', views.index, name='index'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^lastdata/$', views.last_reading, name='last data'),
+    url(r'^stats_setup/$', views.stats_setup),
+    url(r'^stats_update/$', views.stats_update),
     url(r'^switchnode/(?P<node_id>\d+)/(?P<state>(true|false))/$', views.toggle_node, name='last data'),
 ]

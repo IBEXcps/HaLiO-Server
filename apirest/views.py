@@ -58,14 +58,24 @@ def index(request):
     return render(request, 'index.html', {'houses': houses})
 
 
-def last_reading(request):
+def stats_update(request):
     nodes = Node.objects.filter(house__user=request.user)
-    total_usage = 0
-    for node in nodes:
-        total_usage += node.get_last_reading()
-    data = [total_usage, [ node.getFormattedLastData() for node in nodes]]
+    data = {"total_consumption" : sum([node.get_last_reading() for node in nodes]),
+            "node_status" : [(node.id, node.relayState) for node in nodes],
+            "last_data" : [node.get_last_reading() for node in nodes]}
+    
+    return HttpResponse(json.dumps(data))
+
+def stats_setup(request):
+    nodes = Node.objects.filter(house__user=request.user)
+    
+    data = {"total_consumption" : sum([node.get_last_reading() for node in nodes]),
+            "node_status" : [(node.id, node.relayState) for node in nodes],
+            "daily_cummulative" : [(node.id, node.get_daily_usage()) for node in nodes],
+            "time_data" : [(node.id, node.getFormattedLastData()) for node in nodes]}
 
     return HttpResponse(json.dumps(data))
+
 
 @login_required
 def toggle_node(request, node_id, state):

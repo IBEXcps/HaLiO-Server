@@ -181,9 +181,9 @@
                                                     <div class="">
                                                         <label>
                                                             <input type="checkbox" class="js-switch"
-                                                                   data-id="{{ node.id }}" checked/> {{ node.nome }}
-                                                        </label> <label
-                                                            class="pull-right">{{ node.get_last_reading }}</label>
+                                                                   data-id="{{ node.id }}" id="toggle{{ node.id }}" checked/> {{ node.nome }}
+                                                        </label> 
+                                                         <!--<label class="pull-right">{{ node.get_last_reading }}</label>-->
                                                     </div>
                                                 {% endfor %}
 
@@ -289,7 +289,7 @@
 <!-- Switchery -->
 <script src="{% static 'vendors/switchery/dist/switchery.min.js' %}"></script>
 <!-- Custom Theme Scripts -->
-<script src="{% static 'build/js/custom.min.js' %}"></script>
+<script src="{% static 'build/js/custom.js' %}"></script>
 <!-- ECharts -->
 <script src="{% static 'vendors/echarts/dist/echarts.min.js' %}"></script>
 
@@ -532,7 +532,7 @@
         legend: {
             x: 220,
             y: 40,
-            data: ['Minecraft Server', 'AC', 'Cat Gadgets']
+            data: [{% for house in houses %} {% for node in house.nodes.all %}"{{node.nome}}", {% endfor %}{% endfor %}]
         },
         toolbox: {
             show: true,
@@ -560,27 +560,20 @@
         xAxis: [{
             type: 'category',
 
-            data: ['0-6', '6-12', '12-18', '18-24']
+            data: ['0-6', '6-12', '12-18', '18-24'] //TODO make proper queries
         }],
         yAxis: [{
             type: 'value'
         }],
-        series: [{
-            name: 'Minecraft Server',
+        series: [
+            {% for house in houses %} {% for node in house.nodes.all %}
+        {
+            name: '{{node.nome}}',
             type: 'bar',
             stack: true,
             data: [10, 12, 21, 54]
-        }, {
-            name: 'Cat Gadgets',
-            type: 'bar',
-            stack: true,
-            data: [30, 182, 434, 791]
-        }, {
-            name: 'AC',
-            type: 'bar',
-            stack: true,
-            data: [300, 1132, 601, 234]
-        }]
+        },   {% endfor %}{% endfor %}
+        ]
     });
 
     var echartGauge = echarts.init(document.getElementById('echart_guage'), theme);
@@ -617,7 +610,7 @@
                 lineStyle: {
                     color: [
                         [0.6, '#26B99A'],
-                        [1, '#c12e34']
+                        [1, '#ff8d00']
                     ],
                     width: 30
                 }
@@ -682,7 +675,7 @@
                 width: 100,
                 height: 40,
                 offsetCenter: [0, 20],
-                formatter: '{value}W',
+                formatter: '{value} W',
                 textStyle: {
                     color: 'auto',
                     fontSize: 30
@@ -690,7 +683,7 @@
             },
             data: [{
                 value: 50,
-                name: 'Instant Power Consumption'
+                //name: 'Instant Power Consumption'
             }]
         }]
     };
@@ -775,23 +768,86 @@
     echartLine.setOption(lineOptions);
     console.log(lineOptions)
 
-    var posting = function () {
-        var postt = $.get("/lastdata/");
+
+
+function toggleSwitch(switch_elem, on) {
+    if (on){ // turn it on
+        if ($(switch_elem)[0].checked){ // it already is so do 
+            // nothing
+        }else{
+            $(switch_elem).trigger('click').attr("checked", "checked"); // it was off, turn it on
+        }
+    }else{ // turn it off
+        if ($(switch_elem)[0].checked){ // it's already on so 
+            $(switch_elem).trigger('click').removeAttr("checked"); // turn it off
+        }else{ // otherwise 
+            // nothing, already off
+        }
+    }
+}
+
+
+    var update_data = function () {
+        var postt = $.get("/stats_update/");
         // Put the results in a div
         postt.done(function (data) {
             data = JSON.parse(data);
-            datas = data[1];
-            //console.log(data);
-            option.series[0].data[0].value = data[0];
+            console.log(data);
+
+            option.series[0].data[0].value = data["total_consumption"];
             {% for house in houses %} {% for node in house.nodes.all %}
-            lineOptions["series"][{{forloop.counter0}}].data = datas[{{forloop.counter0}}];
+            lineOptions["series"][{{forloop.counter0}}].data = shift_left_and_add(lineOptions["series"][{{forloop.counter0}}].data, data["last_data"][{{forloop.counter0}}])
             {% endfor %}{% endfor %}
+
+            var states = data["node_status"];
+            for(var i = 0; i < states.length; i++)
+            {
+                toggleSwitch("#toggle"+states[i][0]+".js-switch",states[i][1]);
+            }
+
             echartGauge.setOption(option, true);
             echartLine.setOption({'series': lineOptions['series']}, false);
         });
     };
 
-    var t = setInterval(posting, 5000);
+    var t = setInterval(update_data, 5000);
+
+
+
+    function shift_left_and_add(list, new_value)
+    {
+        var newlist = [];
+        for (var i = 0; i < list.length-1; i++) {
+            list[i][1] = list[i+1][1];
+        }
+        list[list.length-1][1]=new_value;
+        return list;
+    }
+
+    var setup = function () {
+        var postt = $.get("/stats_setup/");
+        // Put the results in a div
+        postt.done(function (data) {
+            data = JSON.parse(data);
+            
+
+            console.log(data);
+            option.series[0].data[0].value = data["total_consumption"];
+            
+            lines = data["time_data"];
+            echartGauge.setOption(option, true);
+            {% for house in houses %} {% for node in house.nodes.all %}
+            lineOptions["series"][{{forloop.counter0}}].data = lines[{{forloop.counter0}}][1];
+
+            //console.log(lines[{{forloop.counter0}}][1]);
+            {% endfor %}{% endfor %}
+            
+            echartLine.setOption({'series': lineOptions['series']}, false);
+        });
+    };
+
+    var t = setTimeout(setup, 500);
+
 
 </script>
 
