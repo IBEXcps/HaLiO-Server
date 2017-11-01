@@ -43,7 +43,7 @@ class Node(models.Model):
     def getFormattedLastData(self):
         timeback = 60
         interval_minutes = 5
-        data = self.getDataSince(datetime.datetime.now() - datetime.timedelta(minutes=timeback))
+        data = self.getDataSince(datetime.datetime.now() - datetime.timedelta(seconds=timeback))
         ret = []
         if len(data)==0:
             ret = [(- i*interval_minutes, 0) for i in range(timeback/interval_minutes)]
