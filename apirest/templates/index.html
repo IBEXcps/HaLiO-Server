@@ -794,7 +794,7 @@ function toggleSwitch(switch_elem, on) {
             data = JSON.parse(data);
             console.log(data);
 
-            option.series[0].data[0].value = data["total_consumption"];
+            option.series[0].data[0].value = (data["total_consumption"]).toFixed(2);
             {% for house in houses %} {% for node in house.nodes.all %}
             lineOptions["series"][{{forloop.counter0}}].data = shift_left_and_add(lineOptions["series"][{{forloop.counter0}}].data, data["last_data"][{{forloop.counter0}}])
             {% endfor %}{% endfor %}
@@ -832,7 +832,7 @@ function toggleSwitch(switch_elem, on) {
             
 
             console.log(data);
-            option.series[0].data[0].value = data["total_consumption"];
+            option.series[0].data[0].value = (data["total_consumption"]).toFixed(2);
             
             lines = data["time_data"];
             echartGauge.setOption(option, true);
