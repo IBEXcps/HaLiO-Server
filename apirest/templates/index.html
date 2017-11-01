@@ -530,8 +530,8 @@
             trigger: 'axis'
         },
         legend: {
-            x: 220,
-            y: 40,
+            x: 30,
+            y: 260,
             data: [{% for house in houses %} {% for node in house.nodes.all %}"{{node.nome}}", {% endfor %}{% endfor %}]
         },
         toolbox: {
